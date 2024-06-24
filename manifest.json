@@ -29,6 +29,21 @@
       "description": "Do you want to see hidden folders?",
       "default_value": "False",
       "options": ["False", "True"]
+    },
+    {
+      "id": "code_bin",
+      "type": "input",
+      "name": "Vscode executable",
+      "description": "VSCode / Codium executable file (in path or full path-name)",
+      "default_value": "code"
+    },
+    {
+      "id": "in_new_window",
+      "type": "select",
+      "name": "Open in a new window",
+      "description": "Do you want to open in a new window or in existing one?",
+      "default_value": "False",
+      "options": ["False", "True"]
     }
   ]
 }

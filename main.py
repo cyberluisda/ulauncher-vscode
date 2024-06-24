@@ -35,6 +35,8 @@ class VsFolderExtension(Extension):
         super().__init__()
         self.home: Optional[PosixPath] = Path.home()
         self.show_hidden: bool = False
+        self.code_bin: str = "code"
+        self.in_new_window: bool = False
         self.subscribe(PreferencesEvent, OnLoad())
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
         self.subscribe(ItemEnterEvent, ItemEnterEventListener())
@@ -53,6 +55,15 @@ class OnLoad(EventListener):
             extension.home = Path(home)
 
         extension.show_hidden = event.preferences.get('show_hidden').lower() in (
+            'true', 't', 'y', 'yes', '1'
+        )
+
+        code_bin = event.preferences.get('code_bin')
+        if code_bin:
+            logger.debug(f'Setting code_bin as {code_bin}')
+            extension.code_bin = code_bin
+
+        extension.in_new_window = event.preferences.get('in_new_window').lower() in (
             'true', 't', 'y', 'yes', '1'
         )
 
@@ -91,8 +102,14 @@ class ItemEnterEventListener(EventListener):
     def on_event(self, event: ItemEnterEvent, extension: VsFolderExtension):
         arg = event.get_data()
         if isinstance(arg, OpenFolder):
-            subprocess.run(['code', f'{arg.folder}{os.sep}'])
+            cmd = [extension.code_bin]
+            if extension.in_new_window:
+                cmd.append('--add')
+            cmd.append(f'{arg.folder}{os.sep}')
+            subprocess.run(cmd)
+
             return HideWindowAction()
+
         return RenderResultListAction(
             build_list_of_folders(
                 extension, arg, '', LIMIT_FOLDERS_TO_SHOW
