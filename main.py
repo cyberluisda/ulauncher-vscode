@@ -103,7 +103,7 @@ class ItemEnterEventListener(EventListener):
         arg = event.get_data()
         if isinstance(arg, OpenFolder):
             cmd = [extension.code_bin]
-            if extension.in_new_window:
+            if not extension.in_new_window:
                 cmd.append('--add')
             cmd.append(f'{arg.folder}{os.sep}')
             subprocess.run(cmd)
